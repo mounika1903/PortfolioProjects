@@ -103,11 +103,13 @@ new_vaccinations numeric,
 rollingpeoplevaccinated Bigint
 )
 
+--creating view to store data for later visulaizations
+
 insert into  #percentpopulationvaccinated
 select dea.continent,dea.location,dea.date,dea.population,vac.new_vaccinations
 ,SUM(CONVERT(bigint,vac.new_vaccinations)) OVER (Partition by dea.location Order by dea.location, dea.Date) as rollingPeopleVaccinated
-From [portfoilio project]..covidDeaths dea
-Join [portfoilio project]..covidVaccination vac
+From [portfolio project]..covidDeaths dea
+Join [portfolio project]..covidVaccination vac
 	On dea.location = vac.location  
 	and dea.date = vac.date
 --where dea.continent is not null 
