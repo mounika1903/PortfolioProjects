@@ -91,3 +91,27 @@ select *,(rollingPeopleVaccinated/population)*100
 from popvsvac
 order by 2,3
 
+--TEMP TABLE
+DROP Table if exists #percentpopulationvaccinated
+create Table #percentpopulationvaccinated
+(
+continent nvarchar(255),
+location nvarchar(255),
+Date datetime,
+population numeric,
+new_vaccinations numeric,
+rollingpeoplevaccinated Bigint
+)
+
+insert into  #percentpopulationvaccinated
+select dea.continent,dea.location,dea.date,dea.population,vac.new_vaccinations
+,SUM(CONVERT(bigint,vac.new_vaccinations)) OVER (Partition by dea.location Order by dea.location, dea.Date) as rollingPeopleVaccinated
+From [portfoilio project]..covidDeaths dea
+Join [portfoilio project]..covidVaccination vac
+	On dea.location = vac.location  
+	and dea.date = vac.date
+--where dea.continent is not null 
+
+select *,(rollingpeoplevaccinated*1.00/population)*100
+from #percentpopulationvaccinated
+
