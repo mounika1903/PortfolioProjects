@@ -55,7 +55,7 @@ order by TotalDeathcount desc
 
 --GLOBAL NUMBERS
 
-select date, SUM(new_cases) as total_cases,sum(cast(new_deaths as int)) as total_deaths,sum(new_deaths)/sum(cast(new_deaths as int))/sum(new_cases)*100 as Deathprecentage
+select SUM(new_cases) as total_cases,sum(cast(new_deaths as int)) as total_deaths,sum(cast(new_deaths as int))*1.00/sum(new_cases)*100 as Deathprecentage
 from [portfolio project]..covidDeaths
 --where location like '%states%'
 where continent is  not null
@@ -116,4 +116,12 @@ Join [portfolio project]..covidVaccination vac
 
 select *,(rollingpeoplevaccinated*1.00/population)*100
 from #percentpopulationvaccinated
+
+-- total deaths by location. we exclude some locations as they are redundant
+select location,sum(cast(new_deaths as int)) as total_death_count
+from [portfolio project]..covidDeaths
+where continent is null 
+and location not in ('World','European Union','International')
+group by location
+order by 2 desc
 
